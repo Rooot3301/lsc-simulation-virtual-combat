@@ -16,6 +16,8 @@ class SkidMode(Enum):
     SCANNING = "scan"
     RETREAT = "repli"
     EMERGENCY = "urgence"
+    INFILTRATION = "infiltration"  # v2.0
+    SILENCE = "silence"  # v2.0
 
 
 class SkidMission(Enum):
@@ -26,6 +28,8 @@ class SkidMission(Enum):
     RECONNAISSANCE = "reconnaissance"
     INTERCEPT = "interception"
     EXTRACTION = "extraction"
+    SUPPORT = "support"  # v2.0
+    REPLI = "repli"  # v2.0
 
 
 @dataclass
@@ -57,6 +61,17 @@ class Skid(Entity):
     danger_level: float = 0.0
     under_attack: bool = False
     enemies_detected: int = 0
+
+    # v2.0 - Systèmes avancés
+    signature: float = 0.8  # Signature de détection (0.0-1.0)
+    navigation_mode: str = "normal"  # normal, stealth, aggressive
+    autonomous: bool = False  # Mode autonome
+    module_status: dict = field(default_factory=lambda: {
+        'shields': 100.0,
+        'engines': 100.0,
+        'sensors': 100.0,
+        'weapons': 100.0
+    })
 
     def __post_init__(self):
         """Initialisation du Skid."""

@@ -201,7 +201,8 @@ class XANAStrategicLayer:
 
         elif goal == StrategicGoal.OVERLOAD_RESPONSE:
             # Viable si ressources suffisantes
-            power_available = resources.get('power', {}).get('current', 0)
+            power_pool = resources.get('power')
+            power_available = power_pool.current if power_pool else 0
             score = min(1.0, power_available / 50.0) * 0.6
 
         elif goal == StrategicGoal.NETWORK_DESTABILIZATION:

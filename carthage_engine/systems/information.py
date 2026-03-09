@@ -257,13 +257,14 @@ class InformationSystem:
         total_confidence = sum(r.confidence for r in reports) / len(reports)
 
         # Meilleure qualité observée
-        best_quality = max(r.quality for r in reports, key=lambda q: {
+        quality_scores = {
             DetectionQuality.PERFECT: 5,
             DetectionQuality.GOOD: 4,
             DetectionQuality.PARTIAL: 3,
             DetectionQuality.UNCERTAIN: 2,
             DetectionQuality.NONE: 1
-        }[q])
+        }
+        best_quality = max((r.quality for r in reports), key=lambda q: quality_scores[q])
 
         # Minimum de bruit
         min_noise = min(r.noise_level for r in reports)

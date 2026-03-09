@@ -4,7 +4,10 @@ Agents - combattants défensifs contre XANA.
 
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Dict
 from .entity import Entity, EntityType
+from carthage_engine.systems.psychology import PsychologicalState as PsyStateV2
+from carthage_engine.systems.resources import ResourcePool
 
 
 class AgentType(Enum):
@@ -99,6 +102,16 @@ class Agent(Entity):
     in_combat: bool = False
     target_id: str = None
 
+    # v2.0 - État psychologique avancé
+    psychological_state_v2: PsyStateV2 = field(default_factory=PsyStateV2)
+
+    # v2.0 - Ressources
+    resources: Dict[str, ResourcePool] = field(default_factory=dict)
+
+    # v2.0 - Perception
+    perception_range: int = 1
+    signature: float = 0.7  # Signature pour détection
+
     def __post_init__(self):
         """Initialisation des statistiques selon le type."""
         super().__post_init__()
@@ -133,6 +146,11 @@ class Agent(Entity):
             self.hacking_skill = 0.8
             self.max_health = 100.0
             self.health = 100.0
+
+        # v2.0 - Initialiser ressources si vide
+        if not self.resources:
+            from carthage_engine.systems.resources import ResourceSystem
+            self.resources = ResourceSystem.create_agent_resources()
 
     def increase_corruption(self, amount: float):
         """Augmente le niveau de corruption."""

@@ -47,8 +47,8 @@ class AgentThreatAssessment:
 class PerceptionSnapshot:
     """Snapshot de la perception XANA à un instant T."""
     tick: int
-    global_threat: float
-    global_opportunity: float
+    global_threat: float = 0.0
+    global_opportunity: float = 0.0
     sector_assessments: Dict[str, SectorAssessment] = field(default_factory=dict)
     agent_threats: Dict[str, AgentThreatAssessment] = field(default_factory=dict)
     skid_threat: float = 0.0
@@ -114,7 +114,7 @@ class XANAPerceptionLayer:
         """Évalue un secteur."""
 
         # Présence d'agents
-        agent_count = len([a for a in world.agents.values() if a.sector == sector.id])
+        agent_count = len([a for a in world.agents.values() if a.sector == sector.name])
 
         # Statut tours
         tower_status = 'none'
@@ -143,9 +143,9 @@ class XANAPerceptionLayer:
 
         # Valeur stratégique
         strategic_value = 0.5
-        if sector.id == 'sector5':
+        if sector.name == 'sector5':
             strategic_value = 1.0
-        elif 'network' in sector.id.lower():
+        elif 'network' in sector.name.lower():
             strategic_value = 0.8
 
         # Vulnérabilité
@@ -154,7 +154,7 @@ class XANAPerceptionLayer:
         vulnerability += 0.5 if tower_status == 'inactive' else 0.0
 
         return SectorAssessment(
-            sector_id=sector.id,
+            sector_id=sector.name,
             corruption_level=sector.corruption_level,
             agent_presence=agent_count,
             tower_status=tower_status,
@@ -182,13 +182,15 @@ class XANAPerceptionLayer:
         corruption_vuln = agent.corruption_level * 0.3
         if hasattr(agent, 'psychological_state'):
             corruption_vuln += agent.psychological_state.stress * 0.4
-            corruption_vuln += agent.psychological_state.isolation_factor * 0.3
+            # Utilise isolation (legacy) ou isolation_factor (v2)
+            isolation_val = getattr(agent.psychological_state, 'isolation_factor', getattr(agent.psychological_state, 'isolation', 0.0))
+            corruption_vuln += isolation_val * 0.3
 
         # Niveau de stress
         stress = getattr(agent.psychological_state, 'stress', 0.0) if hasattr(agent, 'psychological_state') else 0.0
 
         # Facteur d'isolation
-        isolation = getattr(agent.psychological_state, 'isolation_factor', 0.0) if hasattr(agent, 'psychological_state') else 0.0
+        isolation = getattr(agent.psychological_state, 'isolation_factor', getattr(agent.psychological_state, 'isolation', 0.0)) if hasattr(agent, 'psychological_state') else 0.0
 
         # Importance stratégique (certains agents sont plus importants)
         importance = 0.7

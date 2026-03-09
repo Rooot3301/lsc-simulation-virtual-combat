@@ -5,6 +5,7 @@ XANA - intelligence artificielle hostile principale.
 from dataclasses import dataclass, field
 from typing import List, Dict
 from .entity import Entity, EntityType
+from carthage_engine.systems.resources import ResourcePool
 
 
 @dataclass
@@ -32,6 +33,12 @@ class XANAEntity(Entity):
     threat_awareness: float = 0.5
     learning_rate: float = 0.1
 
+    # v2.0 - Ressources avancées
+    resource_pools: Dict[str, ResourcePool] = field(default_factory=dict)
+
+    # v2.0 - Plans stratégiques (objets complets)
+    active_strategic_plans: List = field(default_factory=list)
+
     def __post_init__(self):
         """Initialisation de XANA."""
         super().__post_init__()
@@ -39,6 +46,11 @@ class XANAEntity(Entity):
         self.max_health = 1000.0
         self.health = 1000.0
         self.is_destroyed = False
+
+        # v2.0 - Initialiser les pools de ressources si vide
+        if not self.resource_pools:
+            from carthage_engine.systems.resources import ResourceSystem
+            self.resource_pools = ResourceSystem.create_xana_resources(self.power_level)
 
     def increase_power(self, amount: float):
         """Augmente la puissance de XANA."""
