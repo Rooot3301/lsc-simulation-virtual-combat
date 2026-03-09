@@ -1,0 +1,72 @@
+{
+  "name": "Scénario de Démonstration",
+  "description": "Scénario initial avec 4 agents et activation progressive de XANA",
+  "initial_state": {
+    "agents": [
+      {
+        "name": "Yumi",
+        "type": "warrior",
+        "sector": "forest"
+      },
+      {
+        "name": "Odd",
+        "type": "scout",
+        "sector": "desert"
+      },
+      {
+        "name": "Ulrich",
+        "type": "warrior",
+        "sector": "ice"
+      },
+      {
+        "name": "Aelita",
+        "type": "hacker",
+        "sector": "sector5"
+      }
+    ],
+    "towers": [
+      {"id": "T-FOREST-01", "sector": "forest", "state": "inactive"},
+      {"id": "T-FOREST-02", "sector": "forest", "state": "inactive"},
+      {"id": "T-DESERT-01", "sector": "desert", "state": "inactive"},
+      {"id": "T-ICE-01", "sector": "ice", "state": "inactive"},
+      {"id": "T-ICE-02", "sector": "ice", "state": "inactive"},
+      {"id": "T-MOUNTAIN-01", "sector": "mountain", "state": "inactive"},
+      {"id": "T-SEC5-01", "sector": "sector5", "state": "inactive"},
+      {"id": "T-SEC5-02", "sector": "sector5", "state": "inactive"}
+    ],
+    "xana": {
+      "power_level": 1.0,
+      "resources": 100,
+      "doctrine": "opportunistic"
+    },
+    "skid": {
+      "position": "N-SEC5-GATE",
+      "hull_integrity": 100,
+      "energy": 100
+    }
+  },
+  "events": [
+    {
+      "tick": 5,
+      "action": "activate_tower",
+      "target": "T-FOREST-01"
+    },
+    {
+      "tick": 10,
+      "action": "spawn_monsters",
+      "sector": "forest",
+      "type": "kankrelat",
+      "count": 3
+    },
+    {
+      "tick": 15,
+      "action": "activate_tower",
+      "target": "T-DESERT-01"
+    }
+  ],
+  "objectives": [
+    "Survivre pendant 50 ticks",
+    "Maintenir la corruption globale sous 30%",
+    "Ne perdre aucun agent"
+  ]
+}
