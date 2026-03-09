@@ -1,28 +1,29 @@
 """
-Shell interactif principal.
+Shell interactif principal avec interface Rich.
 """
 
+from rich.prompt import Prompt
 from ..core import CarthageEngine
 from .commands import CommandHandler
+from .ui.renderer import CarthageRenderer
 
 
 class CarthageShell:
-    """Shell interactif de Carthage Engine."""
+    """Shell interactif de Carthage Engine avec interface Rich."""
 
     def __init__(self):
         self.engine = CarthageEngine()
         self.command_handler = CommandHandler(self.engine)
+        self.renderer = CarthageRenderer()
         self.running = True
 
     def run(self):
         """Lance le shell interactif."""
-        self.print_banner()
-        print("\nTapez 'help' pour voir les commandes disponibles.")
-        print("Tapez 'run 10' pour lancer une simulation de démonstration.\n")
+        self.renderer.print_banner()
 
         while self.running:
             try:
-                user_input = input("carthage> ").strip()
+                user_input = Prompt.ask("\n[bright_cyan bold]carthage[/bright_cyan bold]").strip()
 
                 if not user_input:
                     continue
@@ -34,24 +35,11 @@ class CarthageShell:
                 self.running = self.command_handler.handle_command(command, args)
 
             except KeyboardInterrupt:
-                print("\nInterruption détectée.")
-                print("Utilisez 'quit' pour quitter proprement.")
+                self.renderer.console.print()
+                self.renderer.print_message("Interruption détectée. Utilisez 'quit' pour quitter proprement.", "yellow")
             except Exception as e:
-                print(f"Erreur: {e}")
+                self.renderer.print_error(f"Erreur: {e}")
 
-        print("\nAu revoir.")
-
-    def print_banner(self):
-        """Affiche la bannière de bienvenue."""
-        banner = """
-╔══════════════════════════════════════════════════════════════╗
-║                                                              ║
-║              CARTHAGE ENGINE v1.0                            ║
-║                                                              ║
-║        Simulation Stratégique Inspirée de Code Lyoko        ║
-║                                                              ║
-║              Python CLI Simulation Engine                    ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
-"""
-        print(banner)
+        self.renderer.console.print()
+        self.renderer.print_message("Au revoir.", "cyan bold")
+        self.renderer.console.print()
