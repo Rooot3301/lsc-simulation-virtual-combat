@@ -106,6 +106,33 @@ class CommandHandler:
             monsters = [m for m in self.engine.world.monsters.values() if not m.is_destroyed]
             self.renderer.print_monsters(monsters)
 
+        # Nouvelles commandes inspect détaillées
+        elif command == 'inspect':
+            if not args:
+                self.renderer.print_error("Usage: inspect <agent|xana|skid> [nom]")
+            elif args[0] == 'agent' and len(args) > 1:
+                agent_name = args[1].lower()
+                agent = self.engine.world.agents.get(agent_name)
+                if agent:
+                    self.renderer.inspect_agent(agent)
+                else:
+                    self.renderer.print_error(f"Agent '{agent_name}' introuvable")
+            elif args[0] == 'xana':
+                ai_state = self.engine.xana_ai.get_current_state_summary()
+                self.renderer.inspect_xana_detailed(self.engine.world.xana, ai_state, self.engine)
+            elif args[0] == 'skid':
+                self.renderer.inspect_skid_detailed(self.engine.world.skid)
+            else:
+                self.renderer.print_error("Usage: inspect <agent|xana|skid> [nom]")
+
+        # Mode live
+        elif command == 'run_live':
+            ticks = int(args[0]) if args else 50
+            self.renderer.print_message(f"Lancement simulation live ({ticks} ticks)...", "cyan bold")
+            self.engine.start()
+            self.renderer.run_live_simulation(self.engine, ticks, interval=0.5)
+            self.renderer.print_success("Simulation live terminée")
+
         # Timeline
         elif command == 'events':
             count = int(args[0]) if args else 10
